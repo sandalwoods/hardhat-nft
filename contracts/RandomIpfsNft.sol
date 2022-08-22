@@ -10,6 +10,7 @@ error RandomIpfsNft__RangeOutOfBounds();
 error RandomIpfsNft__NeedMoreETHSent();
 error RandomIpfsNft__TransferFailed();
 
+
 contract RandomIpfsNft is VRFConsumerBaseV2, ERC721URIStorage, Ownable {
     //when we mint a NFT, we will trigger a chainlink VRF call to get us a random number
     //using that number, we will get a random NFT of the 3: Pug, Shiba Inu, Bernard
@@ -63,10 +64,11 @@ contract RandomIpfsNft is VRFConsumerBaseV2, ERC721URIStorage, Ownable {
         i_mintFee = mintFee;
     }
 
-    function requestNtf() public payable returns (uint256 requestId) {
+    function requestNft() public payable returns (uint256 requestId) {
         if(msg.value < i_mintFee) {
             revert RandomIpfsNft__NeedMoreETHSent();
         }
+
         requestId = i_vrfCoordinator.requestRandomWords(
             i_gasLane,
             i_subscriptionId,
@@ -93,6 +95,7 @@ contract RandomIpfsNft is VRFConsumerBaseV2, ERC721URIStorage, Ownable {
         //11-30 -> Shiba Inu
         //31-100 -> St. Bernard
         Breed dogBreed = getBreedFromModdedRng(moddedRng);
+        s_tokenCounter = s_tokenCounter + 1;
          _safeMint(dogOwner, newTokenId);
          _setTokenURI(newTokenId, s_dogTokenUris[uint256(dogBreed)]);
          emit NftMinted(dogBreed, dogOwner);
